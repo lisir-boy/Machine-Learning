@@ -59,16 +59,16 @@ class MLP_NeuralNetwork(object):
 
         # create randomized weights
         # use scheme from 'efficient backprop to initialize weights
-        input_range = 1.0 / self.input ** (1/2)
-        output_range = 1.0 / self.hidden ** (1/2)
-        self.wi = np.random.normal(loc = 0, scale = input_range, size = (self.input, self.hidden))
-        self.wo = np.random.normal(loc = 0, scale = output_range, size = (self.hidden, self.output))
+        input_range = 1.0 / self.input ** (1/2) #正态分布的标准差
+        output_range = 1.0 / self.hidden ** (1/2)  #同上
+        self.wi = np.random.normal(loc = 0, scale = input_range, size = (self.input, self.hidden))  #生成正态分布数组，数组大小为（self.input行, self.hidden列）
+        self.wo = np.random.normal(loc = 0, scale = output_range, size = (self.hidden, self.output)) #同上
         
         # create arrays of 0 for changes
-        # this is essentially an array of temporary values that gets updated at each iteration
+        # this is essentially an array of temporary values that gets updated at each iteration迭代
         # based on how much the weights need to change in the following iteration
-        self.ci = np.zeros((self.input, self.hidden))
-        self.co = np.zeros((self.hidden, self.output))
+        self.ci = np.zeros((self.input, self.hidden))  #生成self.input行，self.hidden列的元素为0的数组
+        self.co = np.zeros((self.hidden, self.output))  #同上
 
     def feedForward(self, inputs):
         """
@@ -76,29 +76,29 @@ class MLP_NeuralNetwork(object):
         adds together all the outputs from the input layer * their weights
         the output of each node is the sigmoid function of the sum of all inputs
         which is then passed on to the next layer.
-        :param inputs: input data
+        :param inputs: input data  #与--init--的参数不同 是复数 多"S"
         :return: updated activation output vector
         """
         if len(inputs) != self.input-1:
-            raise ValueError('Wrong number of inputs you silly goose!')
+            raise ValueError('Wrong number of inputs you silly goose!')  #输入错误你个傻蛋
 
         # input activations
-        for i in range(self.input -1): # -1 is to avoid the bias
-            self.ai[i] = inputs[i]
+        for i in range(self.input -1): # -1 is to avoid the bias 除去偏差
+            self.ai[i] = inputs[i] #将输入的数据赋给ai
 
-        # hidden activations
+        # hidden activations  #只有一层中间层
         for j in range(self.hidden):
             sum = 0.0
             for i in range(self.input):
                 sum += self.ai[i] * self.wi[i][j]
-            self.ah[j] = tanh(sum)
+            self.ah[j] = tanh(sum)  #ah[j]中存放的是中间层的值 tanh()是中间层激活函数
 
         # output activations
         for k in range(self.output):
             sum = 0.0
             for j in range(self.hidden):
                 sum += self.ah[j] * self.wo[j][k]
-            self.ao[k] = sigmoid(sum)
+            self.ao[k] = sigmoid(sum)  #输出层的输出结果 sigmoid()是输出层的激活函数
 
         return self.ao[:]
 
@@ -106,7 +106,7 @@ class MLP_NeuralNetwork(object):
         """
         For the output layer
         1. Calculates the difference between output value and target value
-        2. Get the derivative (slope) of the sigmoid function in order to determine how much the weights need to change
+        2. Get the derivative (Wrong number of inputs you silly goose) of the sigmoid function in order to determine how much the weights need to change
         3. update the weights for every node based on the learning rate and sig derivative
 
         For the hidden layer
@@ -124,8 +124,9 @@ class MLP_NeuralNetwork(object):
         # the delta tell you which direction to change the weights
         output_deltas = [0.0] * self.output
         for k in range(self.output):
-            error = -(targets[k] - self.ao[k])
-            output_deltas[k] = dsigmoid(self.ao[k]) * error
+            error = -(targets[k] - self.ao[k])  #error是误差值
+            output_deltas[k] = dsigmoid(self.ao[k]) * error  #因为loss=1/2*[(y真-y预测)+……]^2（由156行代码看出）  所以对‘输出的sum’求导是该式 
+                                                             #而‘输出sum’对wo[j][k]求导是ah[j]
 
         # calculate error terms for hidden
         # delta tells you which direction to change the weights
@@ -133,27 +134,28 @@ class MLP_NeuralNetwork(object):
         for j in range(self.hidden):
             error = 0.0
             for k in range(self.output):
-                error += output_deltas[k] * self.wo[j][k]
-            hidden_deltas[j] = dtanh(self.ah[j]) * error
+                error += output_deltas[k] * self.wo[j][k]  #求loss对‘hidden层的ah[j]’的导为此表达式   
+            hidden_deltas[j] = dtanh(self.ah[j]) * error  #求loss对‘hidden层的sum’的导为此表达式    而‘hidden层的sum’对wi[i][j]求导是ai[i]
 
         # update the weights connecting hidden to output
         for j in range(self.hidden):
             for k in range(self.output):
-                change = output_deltas[k] * self.ah[j]
-                self.wo[j][k] -= self.learning_rate * change + self.co[j][k] * self.momentum
+                change = output_deltas[k] * self.ah[j]  #loss对wo[j][k]的导
+                self.wo[j][k] -= self.learning_rate * change + self.co[j][k] * self.momentum  #此处self.momentumi写错了没有'i',已改 
+                                                                                               #加co这一项是为了更快收敛？看最优化书
                 self.co[j][k] = change
 
         # update the weights connecting input to hidden
         for i in range(self.input):
             for j in range(self.hidden):
-                change = hidden_deltas[j] * self.ai[i]
-                self.wi[i][j] -= self.learning_rate * change + self.ci[i][j] * self.momentum
+                change = hidden_deltas[j] * self.ai[i]  #loss对wi[i][j]的导
+                self.wi[i][j] -= self.learning_rate * change + self.ci[i][j] * self.momentum  
                 self.ci[i][j] = change
 
         # calculate error
         error = 0.0
         for k in range(len(targets)):
-            error += 0.5 * (targets[k] - self.ao[k]) ** 2
+            error += 0.5 * (targets[k] - self.ao[k]) ** 2  #计算LOSS值
         return error
 
     def test(self, patterns):
