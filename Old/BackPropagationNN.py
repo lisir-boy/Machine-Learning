@@ -7,19 +7,20 @@ np.seterr(all = 'ignore')
 # IMPORTANT: when using the logit (sigmoid) transfer function for the output layer make sure y values are scaled from 0 to 1
 # if you use the tanh for the output then you should scale between -1 and 1
 # we will use sigmoid for the output layer and tanh for the hidden layer
-def sigmoid(x):  #激活函数
+#该例子中只有一层隐藏层
+def sigmoid(x):  #输出激活函数
     return 1 / (1 + np.exp(-x))
 
 # derivative of sigmoid
-def dsigmoid(y):   #激活函数导数
+def dsigmoid(y):   #输出激活函数导数
     return y * (1.0 - y)
 
 # using tanh over logistic sigmoid is recommended   
-def tanh(x):
+def tanh(x):  #隐藏层激活函数
     return math.tanh(x)
     
 # derivative for tanh sigmoid
-def dtanh(y):
+def dtanh(y):  #导数
     return 1 - y*y
 
 class MLP_NeuralNetwork(object):
