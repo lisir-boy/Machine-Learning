@@ -1,17 +1,17 @@
-import math #math
-import random
-import numpy as np
+import math    #math 更多https://docs.python.org/zh-cn/3/library/index.html
+import random   #导入生成伪随机数器
+import numpy as np  #导入矩阵库
 np.seterr(all = 'ignore')
 
 # sigmoid transfer function
 # IMPORTANT: when using the logit (sigmoid) transfer function for the output layer make sure y values are scaled from 0 to 1
 # if you use the tanh for the output then you should scale between -1 and 1
 # we will use sigmoid for the output layer and tanh for the hidden layer
-def sigmoid(x):
+def sigmoid(x):  #激活函数
     return 1 / (1 + np.exp(-x))
 
 # derivative of sigmoid
-def dsigmoid(y):
+def dsigmoid(y):   #激活函数导数
     return y * (1.0 - y)
 
 # using tanh over logistic sigmoid is recommended   
@@ -24,16 +24,16 @@ def dtanh(y):
 
 class MLP_NeuralNetwork(object):
     """
-    Basic MultiLayer Perceptron (MLP) network, adapted and from the book 'Programming Collective Intelligence' (http://shop.oreilly.com/product/9780596529321.do)
+    Basic MultiLayer Perceptron (MLP) network （多层感知器）, adapted and from the book 'Programming Collective Intelligence' (http://shop.oreilly.com/product/9780596529321.do)
     Consists of three layers: input, hidden and output. The sizes of input and output must match data
     the size of hidden is user defined when initializing the network.
-    The algorithm has been generalized to be used on any dataset.
+    The algorithm（算法） has been generalized to be used on any dataset.
     As long as the data is in this format: [[[x1, x2, x3, ..., xn], [y1, y2, ..., yn]],
                                            [[[x1, x2, x3, ..., xn], [y1, y2, ..., yn]],
                                            ...
                                            [[[x1, x2, x3, ..., xn], [y1, y2, ..., yn]]]
-    An example is provided below with the digit recognition dataset provided by sklearn
-    Fully pypy compatible.
+    An example is provided below with the digit recognition识别 dataset provided by sklearn
+    Fully pypy compatible.完全兼容PYPY
     """
     def __init__(self, input, hidden, output, iterations, learning_rate, momentum, rate_decay):
         """
@@ -45,14 +45,14 @@ class MLP_NeuralNetwork(object):
         self.iterations = iterations
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.rate_decay = rate_decay
+        self.rate_decay = rate_decay #衰退率
         
         # initialize arrays
-        self.input = input + 1 # add 1 for bias node
+        self.input = input + 1 # add 1 for bias node 
         self.hidden = hidden
         self.output = output
 
-        # set up array of 1s for activations
+        # set up array of 1s for activations 建立元素为1的数组
         self.ai = [1.0] * self.input
         self.ah = [1.0] * self.hidden
         self.ao = [1.0] * self.output
