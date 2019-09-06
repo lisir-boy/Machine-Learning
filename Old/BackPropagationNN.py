@@ -71,7 +71,7 @@ class MLP_NeuralNetwork(object):
         self.ci = np.zeros((self.input, self.hidden))  #生成self.input行，self.hidden列的元素为0的数组
         self.co = np.zeros((self.hidden, self.output))  #同上
 
-    def feedForward(self, inputs):
+    def feedForward(self, inputs):  #向前传递
         """
         The feedforward algorithm loops over all the nodes in the hidden layer and
         adds together all the outputs from the input layer * their weights
@@ -103,7 +103,7 @@ class MLP_NeuralNetwork(object):
 
         return self.ao[:]
 
-    def backPropagate(self, targets):
+    def backPropagate(self, targets):  #向后传播
         """
         For the output layer
         1. Calculates the difference between output value and target value
@@ -158,20 +158,20 @@ class MLP_NeuralNetwork(object):
         for k in range(len(targets)):
             error += 0.5 * (targets[k] - self.ao[k]) ** 2  #计算LOSS值
         return error
-
-    def test(self, patterns):
+'''
+    def test(self, patterns):  #测试程序用
         """
         Currently this will print out the targets next to the predictions.
         Not useful for actual ML, just for visual inspection.
         """
         for p in patterns:
             print(p[1], '->', self.feedForward(p[0]))
-
+'''
     def train(self, patterns):
         # N: learning rate
-        for i in range(self.iterations):
+        for i in range(self.iterations):  #迭代次数
             error = 0.0
-            random.shuffle(patterns)
+            random.shuffle(patterns)  #对patterns进行随机排序 排完序 名称还是patterns
             for p in patterns:
                 inputs = p[0]
                 targets = p[1]
@@ -217,7 +217,7 @@ def demo():
         # populate the tuple list with the data
         for i in range(data.shape[0]):
             fart = list((data[i,:].tolist(), y[i].tolist())) # don't mind this variable name
-            out.append(fart)
+            out.append(fart)  #在Out数组末尾添加元素 fart
 
         return out
 
