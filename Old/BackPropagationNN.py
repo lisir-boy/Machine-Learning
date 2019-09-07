@@ -3,6 +3,7 @@ import random   #导入生成伪随机数器
 import numpy as np  #导入矩阵库
 np.seterr(all = 'ignore')
 
+###NN神经网络关键是非线性的激活函数 因为如果激活函数也是线性的 则应用神经网络没有优势，完全可以用线性拟合进行拟合！！！！！
 # sigmoid transfer function
 # IMPORTANT: when using the logit (sigmoid) transfer function for the output layer make sure y values are scaled from 0 to 1
 # if you use the tanh for the output then you should scale between -1 and 1
