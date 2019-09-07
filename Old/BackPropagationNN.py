@@ -157,7 +157,7 @@ class MLP_NeuralNetwork(object):
         error = 0.0
         for k in range(len(targets)):
             error += 0.5 * (targets[k] - self.ao[k]) ** 2  #计算LOSS值
-        return error
+        return error  #向后传递函数最终返回得到的是损失值 即LOSS值
 '''
     def test(self, patterns):  #测试程序用
         """
@@ -198,6 +198,7 @@ def demo():
     """
     run NN demo on the digit recognition dataset from sklearn
     """
+    #输入数据的处理
     def load_data():
         data = np.loadtxt('Data/sklearn_digits.csv', delimiter = ',')
 
@@ -208,17 +209,20 @@ def demo():
         
         data = data[:,10:] # x data
         #data = data - data.mean(axis = 1)
-        data -= data.min() # scale the data so values are between 0 and 1
+        data -= data.min() # scale the data so values are between 0 and 1  #data是多维数组变量 numpy.ndarray类型
+                                                                           #如果输出为该程序的内存位置 意味着没有写该函数的参数即括号
+                                                                           #元组 列表 与ndarray不一样
+                                                                           
         data /= data.max() # scale
         
-        out = []
-        print data.shape
+        out = []  #类型为list
+        print(data.shape）  #输出矩阵data的大小  不加括号为python2的规则
 
-        # populate the tuple list with the data
+        # populate the tuple list with the data  #将数据填充到元组列表中
         for i in range(data.shape[0]):
-            fart = list((data[i,:].tolist(), y[i].tolist())) # don't mind this variable name
-            out.append(fart)  #在Out数组末尾添加元素 fart
-
+            fart = list((data[i,:].tolist(), y[i].tolist())) # don't mind this variable name    fart译为放屁
+            out.append(fart)  #在Out数组末尾添加元素 fart  最终类似于[[[0.29629629654320994, 0.6666666665555556, 1.0], [5.0, 86.0]], [[ 0.6666666665555556, 0.8333333332777779, 1.0], [12.0, 233.0]]]
+                              #而在前面定义的train（）中random.shuffle（）只是将列表最外面一层进行随机排序 也就是每组内的对应关系不变
         return out
 
     X = load_data()
